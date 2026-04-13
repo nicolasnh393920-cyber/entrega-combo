@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A Cronologia da Filosofia - Versão Interativa com 25 capítulos">
+    <title>A Cronologia da Filosofia - Versão Interativa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        :root {
+            --primary: #6b4c9a;
+            --secondary: #9d7ec8;
+            --accent: #d4af37;
+            --text-dark: #1a1a1a;
+            --text-light: #4a4a4a;
+            --bg-light: #fafaf8;
+            --bg-white: #ffffff;
+            --border-color: #e8e8e6;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        body.dark-mode {
+            background-color: #1a1a1a;
+            color: #e8e8e6;
+        }
+
+        body.dark-mode .sidebar {
+            background-color: #2a2a2a;
+            border-right-color: #444;
+        }
+
+        body.dark-mode .content {
+            background-color: #1a1a1a;
+        }
+
+        body.dark-mode .chapter-content {
+            background-color: #2a2a2a;
+            color: #e8e8e6;
+        }
+
+        body.dark-mode .toc-item {
+            color: #c0c0c0;
+        }
+
+        body.dark-mode .toc-item:hover {
+            background-color: #333;
+        }
+
+        /* LAYOUT */
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            background-color: var(--bg-white);
+            border-right: 1px solid var(--border-color);
+            overflow-y: auto;
+            padding: 2rem 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 2rem;
+            border-bottom: 2px solid var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-header h1 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .sidebar-header p {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .toc-list {
+            list-style: none;
+        }
+
+        .toc-item {
+            padding: 0.8rem 1.5rem;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            font-size: 0.95rem;
+        }
+
+        .toc-item:hover {
+            background-color: #f5f1ff;
+            border-left-color: var(--secondary);
+            color: var(--primary);
+        }
+
+        .toc-item.active {
+            background-color: #f5f1ff;
+            border-left-color: var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* MAIN CONTENT */
+        .content {
+            flex: 1;
+            margin-left: 280px;
+            background-color: var(--bg-light);
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #4a3570 100%);
+            color: white;
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-control {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .btn-control:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* CHAPTER CONTENT */
+        .chapter-content {
+            padding: 3rem;
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: var(--bg-white);
+            min-height: calc(100vh - 100px);
+        }
+
+        .chapter-title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .chapter-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            font-style: italic;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 1rem;
+        }
+
+        .chapter-text {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+        }
+
+        .chapter-text strong {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* PROGRESS BAR */
+        .progress-bar {
+            height: 4px;
+            background-color: var(--border-color);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* FOOTER */
+        .footer {
+            background-color: var(--text-dark);
+            color: #c0c0c0;
+            padding: 2rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer a:hover {
+            color: #ffd700;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                padding: 1rem 0;
+                max-height: 200px;
+                overflow-y: auto;
+            }
+
+            .content {
+                margin-left: 0;
+            }
+
+            .chapter-content {
+                padding: 2rem 1rem;
+            }
+
+            .chapter-title {
+                font-size: 1.8rem;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .header-controls {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar {
+                max-height: 150px;
+            }
+
+            .sidebar-header {
+                padding: 0 1rem 1rem;
+            }
+
+            .sidebar-header h1 {
+                font-size: 1.2rem;
+            }
+
+            .toc-item {
+                padding: 0.6rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .chapter-content {
+                padding: 1.5rem 1rem;
+            }
+
+            .chapter-title {
+                font-size: 1.5rem;
+            }
+
+            .chapter-text {
+                font-size: 1rem;
+            }
+
+            .btn-control {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* MENU TOGGLE */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                display: none;
+                position: absolute;
+                width: 100%;
+                z-index: 999;
+            }
+
+            .sidebar.active {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar">
+        <div class="progress-fill"></div>
+    </div>
+
+    <div class="container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>📚 Capítulos</h1>
+                <p>A Cronologia da Filosofia</p>
+            </div>
+            <ul class="toc-list">
+                <li class="toc-item active" onclick="loadChapter(0)">1. Introdução à Filosofia</li>
+                <li class="toc-item" onclick="loadChapter(1)">2. Os Pré-Socráticos</li>
+                <li class="toc-item" onclick="loadChapter(2)">3. Sócrates e sua Filosofia</li>
+                <li class="toc-item" onclick="loadChapter(3)">4. Platão e o Mundo das Ideias</li>
+                <li class="toc-item" onclick="loadChapter(4)">5. Aristóteles e a Lógica</li>
+                <li class="toc-item" onclick="loadChapter(5)">6. Filosofia Helenística</li>
+                <li class="toc-item" onclick="loadChapter(6)">7. Filosofia Medieval</li>
+                <li class="toc-item" onclick="loadChapter(7)">8. Renascimento Filosófico</li>
+                <li class="toc-item" onclick="loadChapter(8)">9. Descartes e o Racionalismo</li>
+                <li class="toc-item" onclick="loadChapter(9)">10. Empirismo Britânico</li>
+                <li class="toc-item" onclick="loadChapter(10)">11. Kant e a Crítica da Razão</li>
+                <li class="toc-item" onclick="loadChapter(11)">12. Idealismo Alemão</li>
+                <li class="toc-item" onclick="loadChapter(12)">13. Hegel e a Dialética</li>
+                <li class="toc-item" onclick="loadChapter(13)">14. Schopenhauer e o Pessimismo</li>
+                <li class="toc-item" onclick="loadChapter(14)">15. Kierkegaard e o Existencialismo</li>
+                <li class="toc-item" onclick="loadChapter(15)">16. Marx e o Materialismo Histórico</li>
+                <li class="toc-item" onclick="loadChapter(16)">17. Nietzsche e a Transvaloração</li>
+                <li class="toc-item" onclick="loadChapter(17)">18. Positivismo e Cientificismo</li>
+                <li class="toc-item" onclick="loadChapter(18)">19. Pragmatismo Americano</li>
+                <li class="toc-item" onclick="loadChapter(19)">20. Fenomenologia de Husserl</li>
+                <li class="toc-item" onclick="loadChapter(20)">21. Heidegger e o Ser</li>
+                <li class="toc-item" onclick="loadChapter(21)">22. Sartre e a Liberdade</li>
+                <li class="toc-item" onclick="loadChapter(22)">23. Estruturalismo Francês</li>
+                <li class="toc-item" onclick="loadChapter(23)">24. Filosofia Analítica</li>
+                <li class="toc-item" onclick="loadChapter(24)">25. Filosofia Contemporânea</li>
+            </ul>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="content">
+            <!-- HEADER -->
+            <header class="header">
+                <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+                <h1>A Cronologia da Filosofia</h1>
+                <div class="header-controls">
+                    <button class="btn-control" onclick="toggleDarkMode()">🌙 Modo Escuro</button>
+                </div>
+            </header>
+
+            <!-- CHAPTER CONTENT -->
+            <div class="chapter-content">
+                <h2 class="chapter-title" id="chapterTitle">1. Introdução à Filosofia</h2>
+                <p class="chapter-subtitle" id="chapterSubtitle">Compreendendo o amor pela sabedoria</p>
+                <div id="chapterText">
+                    <p class="chapter-text">
+                        A filosofia, do grego "philosophia" (φιλοσοφία), significa literalmente "amor pela sabedoria". Ela representa uma das mais profundas e duradouras buscas humanas: a tentativa de compreender a natureza da realidade, do conhecimento, da moral e da existência.
+                    </p>
+                    <p class="chapter-text">
+                        Desde seus primórdios na Grécia Antiga, a filosofia tem se desenvolvido como uma disciplina que questiona as suposições fundamentais sobre o mundo e nosso lugar nele. Ela não apenas busca respostas, mas também ensina-nos a fazer perguntas melhores.
+                    </p>
+                    <p class="chapter-text">
+                        Este livro apresenta uma jornada através de 25 séculos de pensamento filosófico, explorando as ideias que moldaram nossa compreensão do universo, da sociedade e de nós mesmos. Cada capítulo representa um marco importante na história do pensamento humano.
+                    </p>
+                    <p class="chapter-text">
+                        A filosofia nos convida a pensar criticamente, a questionar o óbvio e a buscar compreensão mais profunda. É uma disciplina que transcende o tempo e a cultura, permanecendo relevante enquanto existir a curiosidade humana.
+                    </p>
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <footer class="footer">
+                <p>© 2026 A Cronologia da Filosofia. Todos os direitos reservados.</p>
+                <p>Autor: Nicolas H. de J. Silva | 📧 <a href="mailto:nickzinopen@gmail.com">nickzinopen@gmail.com</a></p>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        const chapters = [
+            {
+                title: "1. Introdução à Filosofia",
+                subtitle: "Compreendendo o amor pela sabedoria",
+                content: "A filosofia, do grego 'philosophia' (φιλοσοφία), significa literalmente 'amor pela sabedoria'. Ela representa uma das mais profundas e duradouras buscas humanas: a tentativa de compreender a natureza da realidade, do conhecimento, da moral e da existência.\n\nDesde seus primórdios na Grécia Antiga, a filosofia tem se desenvolvido como uma disciplina que questiona as suposições fundamentais sobre o mundo e nosso lugar nele. Ela não apenas busca respostas, mas também ensina-nos a fazer perguntas melhores.\n\nEste livro apresenta uma jornada através de 25 séculos de pensamento filosófico, explorando as ideias que moldaram nossa compreensão do universo, da sociedade e de nós mesmos. Cada capítulo representa um marco importante na história do pensamento humano.\n\nA filosofia nos convida a pensar criticamente, a questionar o óbvio e a buscar compreensão mais profunda. É uma disciplina que transcende o tempo e a cultura, permanecendo relevante enquanto existir a curiosidade humana."
+            },
+            {
+                title: "2. Os Pré-Socráticos",
+                subtitle: "Os primeiros filósofos gregos",
+                content: "Os pré-socráticos foram os primeiros filósofos ocidentais, vivendo antes de Sócrates (470-399 a.C.). Eles buscavam explicar a natureza através da razão, em vez de recorrer apenas à mitologia.\n\nThales de Mileto (c. 624-546 a.C.) é frequentemente considerado o primeiro filósofo. Ele acreditava que a água era o princípio fundamental de todas as coisas.\n\nHeráclito (c. 535-475 a.C.) propôs que a mudança era a essência da realidade, com sua famosa afirmação de que 'tudo flui' (panta rhei).\n\nParménides (c. 515-445 a.C.) argumentou que a mudança era ilusória e que o ser era imutável e eterno.\n\nEsses filósofos estabeleceram as bases para a investigação racional que caracterizaria toda a filosofia ocidental."
+            },
+            {
+                title: "3. Sócrates e sua Filosofia",
+                subtitle: "O método socrático e a busca pela verdade",
+                content: "Sócrates (470-399 a.C.) foi uma figura revolucionária na história da filosofia. Ele não deixou escritos, mas suas ideias foram preservadas principalmente através dos diálogos de Platão.\n\nSócrates desenvolveu o método socrático, um processo de questionamento que busca revelar contradições e levar à compreensão mais profunda. Ele acreditava que a verdadeira sabedoria começa com o reconhecimento da própria ignorância.\n\nSua frase mais famosa, 'Só sei que nada sei', reflete essa humildade intelectual. Ele dedicou sua vida a questionar políticos, poetas e artesãos sobre a natureza da virtude, justiça e conhecimento.\n\nSócrates foi julgado e condenado à morte em 399 a.C., acusado de corromper a juventude e desrespeitar os deuses. Sua morte tornou-se um símbolo do compromisso com a verdade e a filosofia."
+            },
+            {
+                title: "4. Platão e o Mundo das Ideias",
+                subtitle: "A teoria das formas e a realidade transcendental",
+                content: "Platão (428-348 a.C.) foi discípulo de Sócrates e fundador da Academia em Atenas. Ele desenvolveu uma das filosofias mais influentes da história ocidental.\n\nA teoria das ideias ou formas é o núcleo da filosofia platônica. Platão argumentava que existe um mundo de formas eternas e imutáveis, enquanto o mundo físico que percebemos é apenas uma sombra imperfeita desse mundo real.\n\nPlatão usou a famosa Alegoria da Caverna para ilustrar essa ideia: prisioneiros em uma caverna veem apenas sombras projetadas na parede, que confundem com a realidade. A filosofia é o processo de libertação dessas ilusões.\n\nSua República é uma obra fundamental que explora a justiça, a política e a natureza da alma. Platão acreditava que o conhecimento verdadeiro era possível apenas através da razão, não dos sentidos."
+            },
+            {
+                title: "5. Aristóteles e a Lógica",
+                subtitle: "O empirismo e o sistema filosófico completo",
+                content: "Aristóteles (384-322 a.C.) foi discípulo de Platão, mas desenvolveu uma filosofia muito diferente. Enquanto Platão enfatizava o mundo das ideias, Aristóteles focava no mundo físico observável.\n\nAristóteles criou um sistema filosófico abrangente que cobria lógica, metafísica, ética, política, biologia e muitos outros campos. Sua influência na história do pensamento ocidental é imensa.\n\nEle desenvolveu a lógica formal, particularmente o silogismo, um método de raciocínio dedutivo que permaneceu a base da lógica por séculos.\n\nAristóteles introduziu o conceito de causa e efeito, distinguindo entre causa material, formal, eficiente e final. Ele também desenvolveu a ética da virtude, argumentando que a felicidade (eudaimonia) é alcançada através do desenvolvimento de virtudes.\n\nSua obra foi preservada e transmitida através da Idade Média, influenciando profundamente o pensamento cristão e islâmico."
+            },
+            {
+                title: "6. Filosofia Helenística",
+                subtitle: "Estoicismo, epicurismo e ceticismo",
+                content: "Após a morte de Aristóteles, a filosofia grega entrou em um novo período conhecido como período helenístico. Novas escolas de pensamento emergiram, cada uma oferecendo respostas diferentes às questões fundamentais.\n\nO Estoicismo, fundado por Zenão de Cítio, enfatizava a virtude como o bem supremo e a importância de viver em harmonia com a razão universal (logos).\n\nO Epicurismo, frequentemente mal interpretado, não era sobre indulgência excessiva. Epicuro argumentava que o prazer verdadeiro vinha da amizade, do conhecimento e da vida simples.\n\nO Ceticismo, representado por Pirro, questionava a possibilidade do conhecimento certo, argumentando que devemos suspender o julgamento diante da incerteza.\n\nEstas escolas refletiam as mudanças políticas e sociais do período, oferecendo filosofias práticas para viver uma vida boa em tempos incertos."
+            },
+            {
+                title: "7. Filosofia Medieval",
+                subtitle: "Fé e razão na era cristã",
+                content: "A filosofia medieval foi profundamente influenciada pelo cristianismo. Os filósofos medievais buscavam reconciliar a fé cristã com a razão filosófica.\n\nSanto Agostinho (354-430) integrou o platonismo ao cristianismo, argumentando que Deus é a realidade suprema e que a verdade é encontrada em Deus.\n\nSanto Tomás de Aquino (1225-1274) é talvez o filósofo medieval mais importante. Ele sintetizou a filosofia aristotélica com a teologia cristã, criando um sistema coerente de pensamento.\n\nTomás argumentava que a razão e a fé não são contraditórias, mas complementares. Ele desenvolveu as famosas 'cinco vias' para provar a existência de Deus.\n\nA escolástica, o método filosófico dominante da Idade Média, usava a lógica e o debate para explorar questões teológicas e filosóficas. Este período produziu uma rica tradição de pensamento que ainda influencia a filosofia contemporânea."
+            },
+            {
+                title: "8. Renascimento Filosófico",
+                subtitle: "Humanismo e o retorno aos clássicos",
+                content: "O Renascimento marcou uma transição entre a Idade Média e a modernidade. Os filósofos renascentistas redescobriram os clássicos gregos e romanos, enfatizando o humanismo e a dignidade humana.\n\nO humanismo renascentista colocava o ser humano no centro da preocupação filosófica, em contraste com o foco medieval em Deus e no divino.\n\nFilósofos como Petrarca e Pico della Mirandola celebravam a capacidade humana de alcançar conhecimento e beleza através da razão e da experiência.\n\nO Renascimento também viu o desenvolvimento do método científico. Figuras como Leonardo da Vinci combinavam observação empírica com pensamento filosófico.\n\nEste período preparou o caminho para a filosofia moderna, com seu ênfase na razão individual, na investigação científica e na liberdade de pensamento."
+            },
+            {
+                title: "9. Descartes e o Racionalismo",
+                subtitle: "Cogito, ergo sum - A revolução cartesiana",
+                content: "René Descartes (1596-1650) é frequentemente considerado o fundador da filosofia moderna. Ele buscava estabelecer uma base sólida para o conhecimento através da razão.\n\nDescartes desenvolveu o método da dúvida sistemática, questionando tudo até encontrar algo que não pudesse ser duvidado. Sua conclusão famosa foi 'Cogito, ergo sum' (Penso, logo existo).\n\nEle argumentava que o pensamento era a única coisa que não podia ser duvidada, pois o próprio ato de duvidar prova que se está pensando.\n\nDescartes estabeleceu o racionalismo como uma abordagem filosófica importante, enfatizando o papel da razão na aquisição do conhecimento.\n\nSua filosofia também influenciou a ciência moderna através de sua ênfase no método matemático e na separação entre mente e corpo (o famoso 'dualismo cartesiano')."
+            },
+            {
+                title: "10. Empirismo Britânico",
+                subtitle: "Locke, Hume e a primazia da experiência",
+                content: "Enquanto Descartes e os racionalistas enfatizavam a razão, os empiristas britânicos argumentavam que todo conhecimento vem da experiência sensorial.\n\nJohn Locke (1632-1704) argumentava que a mente é uma 'tábula rasa' (lousa em branco) que é preenchida através da experiência. Ele desenvolveu uma teoria influente sobre os direitos naturais e o governo.\n\nDavid Hume (1711-1776) levou o empirismo ainda mais longe, argumentando que até mesmo nossas ideias de causalidade e identidade pessoal são derivadas da experiência, não da razão.\n\nHume questionou a noção de substância e causalidade, argumentando que só observamos conjunções constantes de eventos, não conexões causais reais.\n\nO empirismo britânico teve profunda influência na filosofia subsequente e na ciência, enfatizando a importância da observação e da experiência."
+            }
+        ];
+
+        let currentChapter = 0;
+
+        function loadChapter(index) {
+            currentChapter = index;
+            const chapter = chapters[index];
+            
+            document.getElementById('chapterTitle').textContent = chapter.title;
+            document.getElementById('chapterSubtitle').textContent = chapter.subtitle;
+            
+            const textDiv = document.getElementById('chapterText');
+            textDiv.innerHTML = chapter.content.split('\n\n').map(p => `<p class="chapter-text">${p}</p>`).join('');
+            
+            // Update active TOC item
+            document.querySelectorAll('.toc-item').forEach((item, i) => {
+                item.classList.toggle('active', i === index);
+            });
+            
+            // Update progress bar
+            updateProgressBar();
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+            
+            // Close sidebar on mobile
+            document.querySelector('.sidebar').classList.remove('active');
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+
+        function toggleMenu() {
+            document.querySelector('.sidebar').classList.toggle('active');
+        }
+
+        function updateProgressBar() {
+            const progress = ((currentChapter + 1) / chapters.length) * 100;
+            document.querySelector('.progress-fill').style.width = progress + '%';
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+            updateProgressBar();
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' && currentChapter < chapters.length - 1) {
+                loadChapter(currentChapter + 1);
+            } else if (e.key === 'ArrowLeft' && currentChapter > 0) {
+                loadChapter(currentChapter - 1);
+            }
+        });
+    </script>
+</body>
+</html>
